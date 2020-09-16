@@ -1,20 +1,22 @@
 # 필수 설치 plugin
 import requests
 from bs4 import BeautifulSoup
-from save_to_csv import save
+from utils import save
+from nvd.nvd_modules import get_page_indexes, get_row
+
 
 def nvd_vuln_search(path):
     # 표 컬럼 목록
-    cols = ["구분", "Vendor", "제품 이름", "Vuln ID", "CVSS Serverity", "Published", "Summary"]
+    cols = ["구분", "Vendor", "제품 이름", "Vuln ID", "CVSS Severity", "Published", "Summary"]
 
     # 정렬할 기준
-    standard = ['구분', 'Vendor','제품 이름']
+    standard = ['구분', 'Vendor', '제품 이름']
 
     # 저장 파일 및 위치
-    saveFile = path + 'result_smu_nvd_vuln_search.csv'
+    save_file = path + 'result_smu_nvd_vuln_search.csv'
 
     # 기본 url
-    basicUrl = 'https://nvd.nist.gov/vuln/search/results?form_type=Advanced&results_type=overview&search_type=all'
+    basic_url = 'https://nvd.nist.gov/vuln/search/results?form_type=Advanced&results_type=overview&search_type=all'
 
     # 조사할 product 목록
     products = [
@@ -31,7 +33,7 @@ def nvd_vuln_search(path):
     ]
 
     # 조사할 vendor id 목록
-    querys = {
+    queries = {
         'embedded linux|Linux|제품총합': '&query=linux',
         'embedded linux|Linux|Audit': '&query=audit',
         'embedded linux|Linux|Direct Connect': '&query=Direct+Connect',
@@ -59,36 +61,26 @@ def nvd_vuln_search(path):
 
     # 최종 데이터
     res = []
-    row=[]
+
     for product in products:
         # 조사할 product id, vendor id, sha, year, trc
-        query = querys[product]
+        query = queries[product]
         cpe_vendor = cpe_vendors[product]
 
-        productTmp = product.split('|')
+        product_tmp = product.split('|')
 
-        division = productTmp[0]
-        vendor = productTmp[1]
-        productName = productTmp[2]
+        division = product_tmp[0]
+        vendor = product_tmp[1]
+        product_name = product_tmp[2]
 
-        urlTmp = basicUrl + query + cpe_vendor
+        url_tmp = basic_url + query + cpe_vendor
 
         # url get (page 번호 얻기용)
-        req = requests.get(urlTmp)
-
-        # html parser
-        html = req.text
-        soup = BeautifulSoup(html, 'html5lib')
-
-        # page index get
-        try:
-            pageIndexes = int(soup.select(".pagination > li > a")[-1].attrs['href'].split('&')[-1].split('=')[-1]) // 20
-        except IndexError:
-            pageIndexes = 1
+        page_indexes = get_page_indexes(url_tmp)
 
         # 위에서 얻은 page 번호 만큼 반복
-        for pageIndex in range(pageIndexes):
-            url = urlTmp + '&startIndex=' + str(pageIndex * 20)
+        for pageIndex in range(page_indexes):
+            url = url_tmp + '&startIndex=' + str(pageIndex * 20)
             print(url)
 
             # html parser
@@ -102,53 +94,30 @@ def nvd_vuln_search(path):
             # row 단위로 쪼갬
             table_rows = table.find_all('tr')
 
-            yearInRange = False
+            year_in_range = False
 
-            # table의 열 크롤링
+            # table 의 열 크롤링
             for tr in range(len(table_rows)):
 
-                vulnId = table_rows[tr].find('a').text
+                vuln_id = table_rows[tr].find('a').text
 
-                yearCheck = int(vulnId.split('-')[1])
+                year_check = int(vuln_id.split('-')[1])
 
-                if yearCheck >= 2018:
-                    yearInRange = True
+                if year_check >= 2018:
+                    year_in_range = True
                 else:
                     continue
 
-                # 한개의 row를 각각의 열로 쪼갬
-                td = table_rows[tr].find_all('td')
-
-                summary = td[0].find('p').text
-                published = td[0].find('span').text
-
-                cvssSeverity = []
-                cvssSeverityTmp = td[1].find_all('span')
-
-                for c in cvssSeverityTmp:
-                    try:
-                        cVersion = c.find('em').text.strip()
-                        cContent = c.find('a').text.strip()
-                        cvssSeverity.append(cVersion + ' ' + cContent)
-                    except AttributeError:
-                        cvssSeverity.append('(not available)')
-
                 # 결과 데이터에 들어갈 row(list)
-                row = [division, vendor, productName, vulnId, cvssSeverity, published, summary]
-
-                # # 해석된 description row에 저장
-                # try:
-                #     row.append(translator.translate(summary, src='en', dest='ko').text)
-                # except:
-                #     row.append('translator err')
+                row = get_row(table_rows, product, vuln_id, tr)
+                row = [division, vendor, product_name] + row
 
                 res.append(row)
                 print(row)
 
-            if not yearInRange:
+            if not year_in_range:
                 print('page %d is break' % pageIndex)
                 break
 
 
-    save(res, cols, standard, saveFile)
-
+    save(res, cols, standard, save_file)

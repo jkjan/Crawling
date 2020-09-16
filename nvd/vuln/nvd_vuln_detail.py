@@ -1,10 +1,7 @@
 # 필수 설치 plugin
-# pandas, requests, beautifulSoup4, googletrans
-import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from googletrans import Translator
-from save_to_csv import save
+from utils import save
 
 def nvd_vuln_detail(path):
     # 표 컬럼 목록
@@ -15,10 +12,10 @@ def nvd_vuln_detail(path):
     standard = ["구분", "Vendor", ]
 
     # 저장 파일 및 위치
-    saveFile = path + 'result_smu_nvd_vuln_detail.csv'
+    save_file = path + 'result_smu_nvd_vuln_detail.csv'
 
     # 기본 url
-    basicUrl = 'https://nvd.nist.gov/vuln/detail/'
+    basic_url = 'https://nvd.nist.gov/vuln/detail/'
 
     # 조사할 product 목록
     products = [
@@ -38,16 +35,16 @@ def nvd_vuln_detail(path):
 
     # 최종 데이터
     res = []
-    row = []
+
     for product in products:
         # 조사할 product id, vendor id, sha, year, trc
         cve = cves[product]
-        productTmp = product.split('|')
-        division = productTmp[0]
-        vendor = productTmp[1]
-        productName = productTmp[2]
+        product_tmp = product.split('|')
+        division = product_tmp[0]
+        vendor = product_tmp[1]
+        product_name = product_tmp[2]
 
-        url = basicUrl + cve
+        url = basic_url + cve
         print(url)
 
         # html parser
@@ -56,35 +53,25 @@ def nvd_vuln_detail(path):
         soup = BeautifulSoup(html, 'html5lib')
 
         # 크롤링할 table get
-        baseScore = soup.select("span.severityDetail > a")[0].text.strip()
-        print(baseScore)
+        base_score = soup.select("span.severityDetail > a")[0].text.strip()
+        print(base_score)
 
         cvss2 = soup.find("span", attrs={"data-testid": "vuln-cvss2-panel-vector"}).text.strip()
         cvss3 = soup.find("span", attrs={"data-testid": "vuln-cvss3-nist-vector"}).text.strip()
         description = soup.select("span#cvss2FootNoteSection > i")[0].text.strip()
         cvss2 = cvss2[1:-1].split("/")
         cvss3 = cvss3.split("/")
-        # baseScore = soup.find('span', attrs={"data-testid": "vuln-cvssv3-base-score"}).text.strip()
-        accessVector = cvss2[0][-1]
-        accessComplexity = cvss2[1][-1]
+        access_vector = cvss2[0][-1]
+        access_complexity = cvss2[1][-1]
         authentication = cvss2[2][-1]
         availability = cvss2[-1][-1]
         integrity = cvss2[-2][-1]
         confidentiality = cvss3[-3][-1]
 
         # 결과 데이터에 들어갈 row(list)
-        row = [division, vendor, productName, cve, baseScore, accessVector, accessComplexity, authentication,
+        row = [division, vendor, product_name, cve, base_score, access_vector, access_complexity, authentication,
                confidentiality, integrity, availability, description]
-        # # 해석된 description row에 저장
-        # try:
-        #     row.append(translator.translate(description, src='en', dest='ko').text)
-        # except:
-        #     row.append('translator err')
-        print(row)
-
 
         res.append(row)
 
-
-    save(res, cols, standard, saveFile)
-
+    save(res, cols, standard, save_file)
