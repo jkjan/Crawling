@@ -54,7 +54,7 @@ def smu_cve_details(err, path, num, products):
             # row 단위로 쪼갬
             table_rows = table.find_all('tr')
 
-            # 첫번째 줄은 헤더이므로 pass 따라서 시작은 1부터 (코드 상단에 cols으로 헤더 정의)
+            # 첫번째 줄은 헤더이므로 pass 따라서 시작은 1부터 (코드 상단에 cols 으로 헤더 정의)
             for tr in range(1, len(table_rows), 2):
 
                 # 한개의 row 를 각각의 열로 쪼갬
@@ -65,7 +65,10 @@ def smu_cve_details(err, path, num, products):
 
                 # table 크롤링 결과를 row 에 저장
                 for i in range(1, len(td)):
-                    row.append(td[i].text.strip().replace('\t', ''))
+                    if i == 5:
+                        row.append(row[2] + " " + row[3])
+                    else:
+                        row.append(td[i].text.strip().replace('\t', ''))
 
                 # description get
                 description = table_rows[tr + 1].text.strip()

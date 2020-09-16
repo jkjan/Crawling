@@ -1,8 +1,8 @@
 # 표 컬럼 목록
-cols = ["Product Type", "Vendor", "Product", "Version", "Update", "Edition", "Language",
+cols = ["Product Type", "Vendor", "Product", "Version", "Product Version", "Update", "Edition", "Language",
         "CVE ID", "CWE ID", "# of Exploits", "Vulnerability Type(s)", "Publish Date",
         "Update Date", "Score", "Gained Access Level", "Access", "Complexity",
-        "Authentication", "Conf.", "Integ.", "Avail.", "description"]
+        "Authentication", "Conf.", "Integ.", "Avail.", "Description"]
 
 # 조사할 product 목록
 products_total = [
