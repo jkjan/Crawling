@@ -11,7 +11,7 @@ def kb_cert(path):
     standard = ['Product', 'Scope', 'Impact']
 
     # 저장 파일 및 위치
-    save_file = path + 'result_smu_kb_cert.csv'
+    save_file = path + 'result_kb_cert.csv'
 
     # 조사할 product 목록
     products = [
@@ -39,7 +39,7 @@ def kb_cert(path):
 
         # html parser
         html = req.text
-        soup = BeautifulSoup(html, 'html5lib')
+        soup = BeautifulSoup(html, 'html.parser')
 
         description = soup.select('table.wrapper-table > tr > td > p')[0].text
         print(description)

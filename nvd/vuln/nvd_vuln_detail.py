@@ -12,7 +12,7 @@ def nvd_vuln_detail(path):
     standard = ["구분", "Vendor", ]
 
     # 저장 파일 및 위치
-    save_file = path + 'result_smu_nvd_vuln_detail.csv'
+    save_file = path + 'result_nvd_vuln_detail.csv'
 
     # 기본 url
     basic_url = 'https://nvd.nist.gov/vuln/detail/'

@@ -13,7 +13,7 @@ def nvd_products_detail(path):
     standard = ['Product', 'Vuln ID']
 
     # 저장 파일 및 위치
-    save_file = path + 'result_smu_nvd_products_detail.csv'
+    save_file = path + 'result_nvd_products_detail.csv'
 
     # 기본 url
     basic_url_front = 'https://nvd.nist.gov/products/cpe/detail/'

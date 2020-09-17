@@ -13,7 +13,7 @@ def nvd_vuln_search(path):
     standard = ['구분', 'Vendor', '제품 이름']
 
     # 저장 파일 및 위치
-    save_file = path + 'result_smu_nvd_vuln_search.csv'
+    save_file = path + 'result_nvd_vuln_search.csv'
 
     # 기본 url
     basic_url = 'https://nvd.nist.gov/vuln/search/results?form_type=Advanced&results_type=overview&search_type=all'
@@ -86,7 +86,7 @@ def nvd_vuln_search(path):
             # html parser
             req = requests.get(url)
             html = req.text
-            soup = BeautifulSoup(html, 'html5lib')
+            soup = BeautifulSoup(html, 'html.parser')
 
             # 크롤링할 table get
             table = soup.find('tbody')
@@ -110,7 +110,7 @@ def nvd_vuln_search(path):
 
                 # 결과 데이터에 들어갈 row(list)
                 row = get_row(table_rows, product, vuln_id, tr)
-                row = [division, vendor, product_name] + row
+                row = [division, vendor, product_name] + row[1:]
 
                 res.append(row)
                 print(row)

@@ -13,7 +13,7 @@ def nvd_products_search(path):
     standard = ["Product", 'Vuln ID']
 
     # 저장 파일 및 위치
-    save_file = path + 'result_smu_nvd_products_search.csv'
+    save_file = path + 'result_nvd_products_search.csv'
 
     # 기본 url
     basic_url = 'https://nvd.nist.gov/products/cpe/search/results?status=FINAL&orderBy=CPEURI&namingFormat=2.3'
@@ -76,9 +76,7 @@ def nvd_products_search(path):
 
                     # table 의 열 크롤링
                     for tr in range(len(table_rows)):
-
                         vuln_id = table_rows[tr].find('a').text
-
                         year_check = int(vuln_id.split('-')[1])
 
                         if year_check >= 2015:

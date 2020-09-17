@@ -4,8 +4,8 @@ from utils import save
 from cve.meta_data import product_ids, vendor_ids, shas, years, trcs, cols, standard
 
 
-def smu_cve_details(err, path, num, products):
-    save_file = path + 'result_smu_cve_details_' + str(num) + '.csv'
+def cve_details(err, path, num, products):
+    save_file = path + 'result_cve_details_' + str(num) + '.csv'
     # 최종 데이터
     res = []
 
@@ -18,10 +18,13 @@ def smu_cve_details(err, path, num, products):
         trc = trcs[product]
 
         # url get (page 번호 얻기용)
-        req = requests.get('https://www.cve_details.com/vulnerability-list/vendor_id-' + str(vendor_id)
-                           + '/product_id-' + str(product_id)
-                           + '/year-' + str(year)
-                           + '/' + product + '.html')
+        url = 'https://www.cvedetails.com/vulnerability-list/' \
+              'vendor_id-' + str(vendor_id) + \
+              '/product_id-' + str(product_id) + \
+              '/year-' + str(year) + \
+              '/' + product + '.html'
+        print("url:", url)
+        req = requests.get(url)
 
         # html parser
         html = req.text
@@ -33,7 +36,7 @@ def smu_cve_details(err, path, num, products):
         # 위에서 얻은 page 번호 만큼 반복
         for page in range(1, page_num + 1):
             # url get (분석용)
-            url = 'https://www.cve_details.com/vulnerability-list.php?' \
+            url = 'https://www.cvedetails.com/vulnerability-list.php?' \
                   'vendor_id=' + vendor_id + \
                   '&product_id=' + product_id + \
                   '&version_id=&page=' + str(page) + \
@@ -56,7 +59,6 @@ def smu_cve_details(err, path, num, products):
 
             # 첫번째 줄은 헤더이므로 pass 따라서 시작은 1부터 (코드 상단에 cols 으로 헤더 정의)
             for tr in range(1, len(table_rows), 2):
-
                 # 한개의 row 를 각각의 열로 쪼갬
                 td = table_rows[tr].find_all('td')
 
@@ -65,10 +67,7 @@ def smu_cve_details(err, path, num, products):
 
                 # table 크롤링 결과를 row 에 저장
                 for i in range(1, len(td)):
-                    if i == 5:
-                        row.append(row[2] + " " + row[3])
-                    else:
-                        row.append(td[i].text.strip().replace('\t', ''))
+                    row.append(td[i].text.strip().replace('\t', ''))
 
                 # description get
                 description = table_rows[tr + 1].text.strip()
@@ -77,7 +76,7 @@ def smu_cve_details(err, path, num, products):
                 row.append(description)
 
                 # 상세정보 url get
-                cve_url = 'https://www.cve_details.com/cve/' + row[0] + '/'
+                cve_url = 'https://www.cvedetails.com/cve/' + row[0] + '/'
 
                 # 상세정보 url parser
                 req2 = requests.get(cve_url)
@@ -98,13 +97,14 @@ def smu_cve_details(err, path, num, products):
                 # 상세정보 url 정보를 저장할 row 생성
                 # 각 row 만큼 반복 (첫 번째는 헤더이므로 시작은 1부터)
                 for tr2 in range(1, len(table_rows2)):
-
                     # 각 row 를 컬럼으로 쪼갬
                     td2 = table_rows2[tr2].find_all('td')
 
                     row2 = []
                     # 각 row 의 컬럼 데이터 row2에 저장
                     for i in range(1, len(td2) - 1):
+                        if i == 5:
+                            row2.append(row2[2] + " " + row2[3])
                         row2.append(td2[i].text.strip().replace('\t', ''))
 
                     # 상세정보 url row2 데이터와 상위 url row 데이터가 존재하면 최종데이터(res)에 저장
