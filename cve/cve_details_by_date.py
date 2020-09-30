@@ -249,7 +249,7 @@ def cve_details(path):
         file = open("recently_succeeded.txt", "rt")
         recently_succeeded = file.read()
         assert len(recently_succeeded) == 4
-        print("최근에 " + recently_succeeded + "년까지의 데이터를 성공적으로 모은 기록이 았습니다. 이어서 진행합니다.")
+        print("최근에 " + recently_succeeded + "년까지의 데이터를 성공적으로 모은 기록이 있습니다. 이어서 진행합니다.")
         file.close()
     except (FileNotFoundError, AssertionError):
         pass
