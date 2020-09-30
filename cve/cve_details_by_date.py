@@ -256,6 +256,7 @@ def cve_details(path):
 
     proceed = True
 
+    # 최근 기록 바로 다음 연도부터 시작
     i = 0
     if recently_succeeded is not None:
         while int(years[i][0]) <= int(recently_succeeded) and i < len(years):
