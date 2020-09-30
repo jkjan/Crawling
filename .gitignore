@@ -6,3 +6,4 @@ __pycache__/
 *.iml
 *.html
 data/
+*.txt

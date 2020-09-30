@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 from utils import save
 
+
 def kb_cert(path):
     # 표 컬럼 목록
     cols = ['Product', 'Scope', 'Impact', 'Likelihood', 'Description', 'CWE Description', 'CWE Extended Description']
