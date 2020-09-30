@@ -68,7 +68,7 @@ def get_products_data(cve_id):
         try:
             vuln_data = get_product_data(rows)
         except (IndexError, AttributeError):
-            print(cve_id + "의 제품 데이터 중 일부를 얻지 못하였습니다.")
+            print("%s의 제품 데이터 중 일부를 얻지 못하였습니다." % cve_id)
             raise IndexError
 
         products_data.append(vuln_data)
@@ -106,7 +106,7 @@ def get_cve_products_data(row, desc):
     try:
         detail_data = get_products_data(cve_id)
     except (IndexError, AttributeError):
-        print(cve_id + "의 제품 데이터를 얻지 못하였습니다.")
+        print("%s의 제품 데이터를 얻지 못하였습니다." % cve_id)
         return None
 
     # CVE 정보와 취약점 상세정보 합치기
@@ -132,8 +132,8 @@ def get_page_data(page_index, page_url):
         row = cve_table[cve_index].find_all('td')[1:]
         cve_data = get_cve_products_data(row, cve_table[cve_index + 1])
         if cve_data is None:
-            print("오류:", str(page_index) + "페이지 " + str(cve_index//2+1) + "번째 행에 오류가 있습니다.")
-            print("주소:", page_url)
+            print("오류: %d페이지 %d번째 행에 오류가 있습니다." % (page_index, cve_index//2+1))
+            print("주소: %s" % page_url)
             exit(0)
 
         page_data += cve_data
@@ -153,7 +153,7 @@ def get_month_data(year, month):
 
     # 페이지를 얻을 수 없음
     if len(pages) == 0:
-        print("오류:", year + "년 " + str(month) + "월의 페이지 정보를 얻지 못하였습니다.")
+        print("오류: %s년 %d월의 페이지 정보를 얻지 못하였습니다." % (year, month))
         print(list_url)
         exit(0)
 
@@ -165,7 +165,7 @@ def get_month_data(year, month):
         print(str(month) + "월에는 취약점 데이터가 없습니다.\n")
         return None
 
-    print(str(month) + "월의 취약점 데이터 총 " + str(total_number) + "건을 조사합니다.")
+    print("%d월의 취약점 데이터 총 %d건을 조사합니다." % (month, total_number))
     
     # 페이지별로 데이터 가져오기
     month_data = []
@@ -176,7 +176,7 @@ def get_month_data(year, month):
         cve_count += cve_per_page
 
     if total_number == cve_count:
-        print("\t" + str(cve_count) + "건의 취약점 데이터를 성공적으로 얻었습니다.")
+        print("\t%d건의 취약점 데이터를 성공적으로 얻었습니다." % cve_count)
     else:
         # 오류는 발생하지 않았으나 수가 맞지 않음
         print("오류: 데이터를 얻는데 확인되지 않은 오류가 발생하였습니다.")
@@ -190,7 +190,7 @@ def get_year_data(path, year):
     year_data = []
     cve_count = 0
 
-    print(year[0] + "년도의 취약점 데이터 총 " + year[1] + "건을 조사합니다.")
+    print("%s년도의 취약점 데이터 총 %s건을 조사합니다." % (year[0], year[1]))
     for month in range(1, 13):
         month_data, cve_per_month = get_month_data(year[0], month)
         if month_data is not None:
@@ -198,7 +198,7 @@ def get_year_data(path, year):
             cve_count += cve_per_month
 
     if cve_count == int(year[1]):
-        print("\n" + str(cve_count) + "건의 취약점 데이터를 성공적으로 얻었습니다.")
+        print("\n%d건의 취약점 데이터를 성공적으로 얻었습니다." % cve_count)
     else:
         # 오류는 발생하지 않았으나 수가 맞지 않음
         print("오류: 데이터를 얻는데 확인되지 않은 오류가 발생하였습니다.")
@@ -208,7 +208,7 @@ def get_year_data(path, year):
 
     try:
         abs_path = path + file_name
-        print("해당 데이터를 " + abs_path + " 에 저장합니다.")
+        print("해당 데이터를 %s 에 저장합니다." % abs_path)
         save(year_data, cols, standard, abs_path)
         print("파일 저장에 성공하였습니다.\n")
         file = open("recently_succeeded.txt", "wt")
@@ -249,7 +249,7 @@ def cve_details(path):
         file = open("recently_succeeded.txt", "rt")
         recently_succeeded = file.read()
         assert len(recently_succeeded) == 4
-        print("최근에 " + recently_succeeded + "년까지의 데이터를 성공적으로 모은 기록이 있습니다. 이어서 진행합니다.")
+        print("최근에 %s년까지의 데이터를 성공적으로 모은 기록이 있습니다. 이어서 진행합니다." % recently_succeeded)
         file.close()
     except (FileNotFoundError, AssertionError):
         pass
@@ -268,4 +268,3 @@ def cve_details(path):
                 proceed = False
         if proceed:
             get_year_data(path, years[i])
-
