@@ -1,4 +1,7 @@
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
 
 def save(res, cols, standard, save_file):
     # 최종데이터를 dataframe 으로 변경하고 위에서 선언한 standard 기준으로 정렬하고 index 재설정
@@ -11,3 +14,12 @@ def save(res, cols, standard, save_file):
     df.to_csv(save_file, mode='w', encoding="utf8", index=False)
 
     print('finished')
+
+
+def get_soup(url):
+    req = requests.get(url)
+    return BeautifulSoup(req.text, 'html5lib')
+
+
+def get_text(tag):
+    return tag.text.strip().replace('\t', '')
