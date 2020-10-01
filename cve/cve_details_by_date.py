@@ -251,20 +251,15 @@ def cve_details(path):
         assert len(recently_succeeded) == 4
         print("최근에 %s년까지의 데이터를 성공적으로 모은 기록이 있습니다. 이어서 진행합니다." % recently_succeeded)
         file.close()
+        recently_succeeded = int(recently_succeeded)
     except (FileNotFoundError, AssertionError):
         pass
-
-    proceed = True
 
     # 최근 기록 바로 다음 연도부터 시작
     i = 0
     if recently_succeeded is not None:
-        while int(years[i][0]) <= int(recently_succeeded) and i < len(years):
+        while int(years[i][0]) <= recently_succeeded and i < len(years):
             i += 1
 
     for i in range(i, len(years)):
-        if recently_succeeded is not None:
-            if int(years[i][0]) <= int(recently_succeeded):
-                proceed = False
-        if proceed:
-            get_year_data(path, years[i])
+        get_year_data(path, years[i])
