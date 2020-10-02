@@ -104,18 +104,18 @@ def get_cve_products_data(row, desc):
         return None
 
     try:
-        detail_data = get_products_data(cve_id)
+        products_data = get_products_data(cve_id)
     except (IndexError, AttributeError):
         print("%s의 제품 데이터를 얻지 못하였습니다." % cve_id)
         return None
 
     # CVE 정보와 취약점 상세정보 합치기
     cve_products_data = []
-    if detail_data is None:
+    if products_data is None:
         # 제품 데이터 없었으면 빈 열 추가
         cve_products_data.append(['' for i in range(8)] + cve_data)
     else:
-        for d in detail_data:
+        for d in products_data:
             cve_products_data.append(d + cve_data)
 
     return cve_products_data
@@ -248,9 +248,9 @@ def cve_details(path):
     try:
         file = open("recently_succeeded.txt", "rt")
         recently_succeeded = file.read()
+        file.close()
         assert len(recently_succeeded) == 4
         print("최근에 %s년까지의 데이터를 성공적으로 모은 기록이 있습니다. 이어서 진행합니다." % recently_succeeded)
-        file.close()
         recently_succeeded = int(recently_succeeded)
     except (FileNotFoundError, AssertionError):
         pass

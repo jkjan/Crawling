@@ -8,12 +8,15 @@ from nvd.vuln.nvd_vuln_search import nvd_vuln_search
 
 # 저장 파일 및 위치
 path = 'data/'
-err = open("error.txt", "wt")
-cve_details(path)
-err.close()
 
-# kb_cert(path)
-# nvd_products_detail(path)
-# nvd_products_search(path)
-# nvd_vuln_detail(path)
-# nvd_vuln_search(path)
+try:
+    cve_details(path)
+
+    # kb_cert(path)
+    # nvd_products_detail(path)
+    # nvd_products_search(path)
+    # nvd_vuln_detail(path)
+    # nvd_vuln_search(path)
+except KeyboardInterrupt:
+    print("모든 작업을 중단합니다.")
+    exit(0)

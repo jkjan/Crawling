@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import time
 
 
 def save(res, cols, standard, save_file):
@@ -13,8 +14,13 @@ def save(res, cols, standard, save_file):
 
 # url 에서 수프 가져오기
 def get_soup(url):
-    req = requests.get(url)
-    return BeautifulSoup(req.text, 'html5lib')
+    try:
+        req = requests.get(url)
+        return BeautifulSoup(req.text, 'html5lib')
+    except requests.exceptions.ConnectionError as e:
+        print("인터넷 연결을 확인하시길 바랍니다.")
+        print(e)
+        exit(0)
 
 
 # 태그에서 정제된 텍스트 가져오기
