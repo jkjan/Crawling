@@ -208,9 +208,9 @@ def get_year_data(path, year):
         file = open("recently_succeeded.txt", "wt")
         file.write(year[0])
         file.close()
-    except Exception:
+    except Exception as e:
         print("파일 저장에 실패하였습니다.\n")
-        print(Exception)
+        print(e)
         exit(0)
 
 
