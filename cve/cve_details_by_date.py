@@ -151,19 +151,13 @@ def get_month_data(year, month):
     list_soup = get_soup(list_url)
     pages = list_soup.select(tag_pos['pages'])
 
-    # 페이지를 얻을 수 없음
-    if len(pages) == 0:
-        print("오류: %s년 %d월의 페이지 정보를 얻지 못하였습니다." % (year, month))
-        print(list_url)
-        exit(0)
-
     total_number = list_soup.select(tag_pos['total_number'])[0].text
     total_number = int(total_number)
 
     # 이 달에 보고된 취약점이 없음
     if total_number == 0:
         print(str(month) + "월에는 취약점 데이터가 없습니다.\n")
-        return None
+        return None, 0
 
     print("%d월의 취약점 데이터 총 %d건을 조사합니다." % (month, total_number))
     
